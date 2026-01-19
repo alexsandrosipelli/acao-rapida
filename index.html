@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Aplicativo de gerenciamento de tarefas com foco em acessibilidade e UX"
+    />
+    <meta name="theme-color" content="#2563eb" />
+    <title>Ação Rápida - Gerenciador de Tarefas</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="manifest" href="app.webmanifest" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>"
+    />
+  </head>
+
+  <body>
+    <header class="top-bar" role="banner">
+      <h1>Ação Rápida</h1>
+      <div class="header-controls">
+        <button
+          id="filterBtn"
+          aria-label="Filtrar tarefas"
+          title="Filtrar tarefas"
+        >
+          <span>🔍</span>
+        </button>
+        <button
+          id="themeToggle"
+          aria-label="Alternar tema"
+          title="Alternar tema claro/escuro"
+        >
+          <span>🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="app" role="main">
+      <div id="filterPanel" class="filter-panel hidden" aria-hidden="true">
+        <h2>Filtrar</h2>
+        <div class="filter-options">
+          <button class="filter-option active" data-filter="all">Todas</button>
+          <button class="filter-option" data-filter="pending">Pendentes</button>
+          <button class="filter-option" data-filter="completed">
+            Concluídas
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-bar" role="status" aria-live="polite">
+        <span id="taskStats">0 tarefas</span>
+        <button id="clearCompleted" class="secondary-btn">
+          Limpar concluídas
+        </button>
+      </div>
+
+      <ul id="taskList" aria-label="Lista de ações" role="list"></ul>
+
+      <div id="emptyState" class="empty" aria-live="polite">
+        <div class="empty-icon">📝</div>
+        <p>Nenhuma ação ainda</p>
+        <span>Clique no botão "+" para adicionar uma nova tarefa</span>
+      </div>
+
+      <!-- Modal para adicionar tarefa -->
+      <div
+        id="addTaskModal"
+        class="modal hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <div class="modal-content">
+          <h2 id="modalTitle">Nova Tarefa</h2>
+          <textarea
+            id="taskInput"
+            placeholder="Digite sua tarefa..."
+            rows="3"
+            aria-label="Texto da tarefa"
+          ></textarea>
+          <div class="modal-actions">
+            <button id="cancelBtn" class="secondary-btn">Cancelar</button>
+            <button id="saveTaskBtn" class="primary-btn">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="bottom-bar" role="contentinfo">
+      <div class="voice-controls">
+        <button
+          id="voiceBtn"
+          aria-label="Adicionar por voz"
+          title="Adicionar por voz"
+        >
+          <span>🎤</span>
+        </button>
+      </div>
+      <button id="addBtn" class="fab" aria-label="Adicionar ação">＋</button>
+      <div class="quick-actions">
+        <button
+          id="sortBtn"
+          aria-label="Ordenar tarefas"
+          title="Ordenar tarefas"
+        >
+          <span>↕</span>
+        </button>
+      </div>
+    </footer>
+
+    <div class="toast-container" aria-live="polite"></div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
