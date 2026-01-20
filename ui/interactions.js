@@ -81,6 +81,17 @@ export function bindInteractions() {
   });
   
   // Controle por voz
+  async function requestMicrophonePermission() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    stream.getTracks().forEach(track => track.stop())
+    return true
+  } catch (err) {
+    showToast('Permissão de microfone negada', 'error')
+    return false
+  }
+}
+
   document.getElementById('voiceBtn').addEventListener('click', startVoiceRecognition);
   
   // Interações com a lista
@@ -108,32 +119,51 @@ export function bindInteractions() {
     }
   });
 }
+async function startVoiceRecognition() {
+  // Verifica suporte
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition
 
-function startVoiceRecognition() {
-  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    showToast('Reconhecimento de voz não suportado neste navegador', 'error');
-    return;
+  if (!SpeechRecognition) {
+    showToast('Reconhecimento de voz não suportado', 'error')
+    return
   }
-  
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  
-  recognition.lang = 'pt-BR';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-  
-  recognition.start();
-  showToast('Ouvindo... fale sua tarefa');
-  
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
+
+  // Solicita permissão (PWA precisa disso)
+  const permissionGranted = await requestMicrophonePermission()
+  if (!permissionGranted) return
+
+  const recognition = new SpeechRecognition()
+
+  recognition.lang = 'pt-BR'
+  recognition.interimResults = false
+  recognition.maxAlternatives = 1
+  recognition.continuous = false
+
+  try {
+    recognition.start()
+    showToast('🎤 Ouvindo... fale sua tarefa')
+  } catch (err) {
+    showToast('Não foi possível iniciar o microfone', 'error')
+  }
+
+  recognition.onresult = event => {
+    const transcript = event.results[0][0].transcript
     if (transcript.trim()) {
-      addTask(transcript);
-      showToast('Tarefa adicionada por voz!');
+      addTask(transcript)
+      showToast('Tarefa adicionada por voz!')
     }
-  };
-  
-  recognition.onerror = (event) => {
-    showToast('Erro no reconhecimento de voz', 'error');
-  };
+  }
+
+  recognition.onerror = event => {
+    console.error('Erro voz:', event.error)
+
+    const errors = {
+      'not-allowed': 'Permissão de microfone negada',
+      'service-not-allowed': 'Serviço de voz bloqueado no PWA',
+      'network': 'Erro de rede no reconhecimento de voz'
+    }
+
+    showToast(errors[event.error] || 'Erro no reconhecimento de voz', 'error')
+  }
 }
